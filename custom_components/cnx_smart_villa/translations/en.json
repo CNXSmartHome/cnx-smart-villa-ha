@@ -29,5 +29,22 @@
     "abort": {
       "already_configured": "CNX Smart Villa is already configured"
     }
+  },
+  "issues": {
+    "untested_home_assistant_version": {
+      "title": "Home Assistant version has not been validated by CNX",
+      "description": "CNX Smart Villa {integration_version} is running on Home Assistant {home_assistant_version}. CNX has validated {tested_series}. The integration will continue running, but production updates should be held until this Home Assistant series passes CNX compatibility tests."
+    }
+  },
+  "system_health": {
+    "info": {
+      "integration_version": "CNX Smart Villa version",
+      "home_assistant_version": "Home Assistant version",
+      "compatibility_status": "CNX compatibility status",
+      "tested_home_assistant_series": "Validated Home Assistant series",
+      "production_policy": "Production update policy",
+      "mapping_count": "Commissioned mappings",
+      "smart_villa_os": "Smart Villa OS connection"
+    }
   }
 }
