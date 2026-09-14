@@ -1,0 +1,81 @@
+name: Home Assistant Compatibility
+
+on:
+  push:
+    paths:
+      - "custom_components/**"
+      - "tests/**"
+      - ".github/workflows/compatibility.yml"
+  pull_request:
+    paths:
+      - "custom_components/**"
+      - "tests/**"
+      - ".github/workflows/compatibility.yml"
+  schedule:
+    - cron: "15 2 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validated-production:
+    name: Validated HA ${{ matrix.ha-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        ha-version:
+          - "2026.9.2"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+      - name: Install validated Home Assistant
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install "homeassistant==${{ matrix.ha-version }}" pytest
+      - name: Compile integration
+        run: python -m compileall -q custom_components/cnx_smart_villa
+      - name: Run compatibility policy tests
+        run: pytest -q tests/test_version_guard.py
+      - name: Import integration on validated HA
+        run: |
+          python - <<'PY'
+          from homeassistant.const import __version__
+          from custom_components.cnx_smart_villa.version_guard import evaluate_version
+          info = evaluate_version()
+          print(f"Home Assistant: {__version__}")
+          print(f"CNX compatibility: {info.status}")
+          assert info.tested, f"Validated matrix version unexpectedly untested: {info}"
+          PY
+
+  latest-home-assistant:
+    name: Latest HA early-warning
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+      - name: Install latest Home Assistant
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install homeassistant pytest
+      - name: Compile integration against latest HA
+        run: python -m compileall -q custom_components/cnx_smart_villa
+      - name: Run policy tests
+        run: pytest -q tests/test_version_guard.py
+      - name: Import integration and report latest status
+        run: |
+          python - <<'PY'
+          from homeassistant.const import __version__
+          from custom_components.cnx_smart_villa.version_guard import evaluate_version
+          info = evaluate_version()
+          print(f"Latest Home Assistant: {__version__}")
+          print(f"CNX status: {info.status}")
+          print(f"CNX tested series: {info.tested_series}")
+          PY
