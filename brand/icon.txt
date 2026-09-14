@@ -1,0 +1,1 @@
+Binary icon source is preserved in the Smart Villa monorepo at integrations/home-assistant/cnx_smart_villa/brand/icon.png and must be mirrored here as icon.png for HACS validation.
