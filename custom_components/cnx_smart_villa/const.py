@@ -5,7 +5,7 @@ from typing import Final
 
 DOMAIN: Final = "cnx_smart_villa"
 NAME: Final = "CNX Smart Villa"
-VERSION: Final = "0.1.0"
+VERSION: Final = "0.2.0"
 
 CONF_SMART_VILLA_URL: Final = "smart_villa_url"
 CONF_API_TOKEN: Final = "api_token"
@@ -25,6 +25,7 @@ DATA_STORE: Final = "store"
 DATA_API: Final = "api"
 DATA_WS_REGISTERED: Final = "ws_registered"
 DATA_PANEL_REGISTERED: Final = "panel_registered"
+DATA_COMPATIBILITY: Final = "compatibility"
 
 SUPPORTED_DOMAINS: Final = frozenset(
     {
