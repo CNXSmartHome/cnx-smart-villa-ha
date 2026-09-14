@@ -18,6 +18,9 @@ on:
 permissions:
   contents: read
 
+env:
+  PYTHONPATH: ${{ github.workspace }}
+
 jobs:
   validated-production:
     name: Validated HA ${{ matrix.ha-version }}
@@ -39,12 +42,13 @@ jobs:
       - name: Compile integration
         run: python -m compileall -q custom_components/cnx_smart_villa
       - name: Run compatibility policy tests
-        run: pytest -q tests/test_version_guard.py
+        run: python -m pytest -q tests/test_version_guard.py
       - name: Import integration on validated HA
         run: |
           python - <<'PY'
           from homeassistant.const import __version__
           from custom_components.cnx_smart_villa.version_guard import evaluate_version
+          import custom_components.cnx_smart_villa.system_health
           info = evaluate_version()
           print(f"Home Assistant: {__version__}")
           print(f"CNX compatibility: {info.status}")
@@ -66,12 +70,13 @@ jobs:
       - name: Compile integration against latest HA
         run: python -m compileall -q custom_components/cnx_smart_villa
       - name: Run policy tests
-        run: pytest -q tests/test_version_guard.py
+        run: python -m pytest -q tests/test_version_guard.py
       - name: Import integration and report latest status
         run: |
           python - <<'PY'
           from homeassistant.const import __version__
           from custom_components.cnx_smart_villa.version_guard import evaluate_version
+          import custom_components.cnx_smart_villa.system_health
           info = evaluate_version()
           print(f"Latest Home Assistant: {__version__}")
           print(f"CNX status: {info.status}")
