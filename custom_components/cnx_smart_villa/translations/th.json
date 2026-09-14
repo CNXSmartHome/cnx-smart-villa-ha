@@ -29,5 +29,22 @@
     "abort": {
       "already_configured": "ตั้งค่า CNX Smart Villa แล้ว"
     }
+  },
+  "issues": {
+    "untested_home_assistant_version": {
+      "title": "Home Assistant รุ่นนี้ยังไม่ผ่านการรับรองจาก CNX",
+      "description": "CNX Smart Villa {integration_version} กำลังทำงานบน Home Assistant {home_assistant_version} โดยรุ่นที่ CNX ทดสอบแล้วคือ {tested_series} ระบบจะยังทำงานต่อ แต่เครื่อง Production ควรหยุดการอัปเดตไว้จนกว่ารุ่นนี้จะผ่าน compatibility test ของ CNX"
+    }
+  },
+  "system_health": {
+    "info": {
+      "integration_version": "เวอร์ชัน CNX Smart Villa",
+      "home_assistant_version": "เวอร์ชัน Home Assistant",
+      "compatibility_status": "สถานะความเข้ากันได้กับ CNX",
+      "tested_home_assistant_series": "Home Assistant series ที่ทดสอบแล้ว",
+      "production_policy": "นโยบายอัปเดต Production",
+      "mapping_count": "จำนวน Mapping ที่ Commission แล้ว",
+      "smart_villa_os": "การเชื่อมต่อ Smart Villa OS"
+    }
   }
 }
