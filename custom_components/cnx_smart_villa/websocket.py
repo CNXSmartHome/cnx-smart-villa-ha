@@ -24,6 +24,7 @@ from .const import (
 )
 from .helpers import canonical_entity_id, normalize_code
 from .store import MappingRecord, MappingStore
+from .version_guard import evaluate_version
 
 
 def _runtime(hass: HomeAssistant) -> tuple[MappingStore, SmartVillaApiClient]:
@@ -256,7 +257,7 @@ async def websocket_delete_mapping(
 async def websocket_status(
     hass: HomeAssistant, connection: ActiveConnection, msg: dict[str, Any]
 ) -> None:
-    """Return commissioning and Smart Villa OS connectivity status."""
+    """Return commissioning, compatibility and Smart Villa OS status."""
     try:
         store, api = _runtime(hass)
     except RuntimeError:
@@ -276,5 +277,9 @@ async def websocket_status(
 
     connection.send_result(
         msg["id"],
-        {"mapping_count": len(store.all()), "smart_villa_os": health},
+        {
+            "mapping_count": len(store.all()),
+            "smart_villa_os": health,
+            "compatibility": evaluate_version().as_dict(),
+        },
     )
