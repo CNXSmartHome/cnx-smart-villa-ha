@@ -1,0 +1,1 @@
+The integration code is installable without a repository-local brand image. The icon will be added after the first functional Home Assistant PoC if needed; Home Assistant/HACS branding can also be submitted through the official brands repository.
