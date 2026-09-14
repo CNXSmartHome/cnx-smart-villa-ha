@@ -1,0 +1,33 @@
+{
+  "title": "CNX Smart Villa",
+  "config": {
+    "step": {
+      "user": {
+        "title": "ตั้งค่า CNX Smart Villa",
+        "description": "รุ่นแรกสามารถใช้หน้า Commissioning แบบ Local ได้แม้ยังไม่เชื่อม Smart Villa OS",
+        "data": {
+          "smart_villa_url": "URL ของ Smart Villa OS",
+          "api_token": "Integration API token (ยังไม่บังคับ)"
+        },
+        "data_description": {
+          "smart_villa_url": "ตัวอย่าง https://smartvilla.example.com หรือเว้นว่างเพื่อใช้เฉพาะ Local Commissioning",
+          "api_token": "เก็บไว้สำหรับ Mapping Sync ในขั้นถัดไป ห้ามใส่ Home Assistant token"
+        }
+      },
+      "reconfigure": {
+        "title": "ตั้งค่า CNX Smart Villa ใหม่",
+        "description": "แก้การเชื่อมต่อ Smart Villa OS โดยไม่ลบ Mapping ที่ทำไว้",
+        "data": {
+          "smart_villa_url": "URL ของ Smart Villa OS",
+          "api_token": "Integration API token"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "เชื่อมต่อ Smart Villa OS /api/health ไม่ได้"
+    },
+    "abort": {
+      "already_configured": "ตั้งค่า CNX Smart Villa แล้ว"
+    }
+  }
+}
