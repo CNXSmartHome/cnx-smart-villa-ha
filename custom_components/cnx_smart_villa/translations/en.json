@@ -1,0 +1,33 @@
+{
+  "title": "CNX Smart Villa",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Set up CNX Smart Villa",
+        "description": "The Smart Villa OS URL is optional for the commissioning-only first slice. Add it now if reachable from Home Assistant.",
+        "data": {
+          "smart_villa_url": "Smart Villa OS URL",
+          "api_token": "Integration API token (optional for now)"
+        },
+        "data_description": {
+          "smart_villa_url": "Example: https://smartvilla.example.com. Leave blank to use local commissioning only.",
+          "api_token": "Reserved for authenticated mapping sync. Never use a Home Assistant token here."
+        }
+      },
+      "reconfigure": {
+        "title": "Reconfigure CNX Smart Villa",
+        "description": "Update the Smart Villa OS connection. Existing local mappings are preserved.",
+        "data": {
+          "smart_villa_url": "Smart Villa OS URL",
+          "api_token": "Integration API token"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Cannot connect to Smart Villa OS /api/health"
+    },
+    "abort": {
+      "already_configured": "CNX Smart Villa is already configured"
+    }
+  }
+}
