@@ -1,0 +1,73 @@
+name: Publish Release
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/release.yml"
+      - "custom_components/cnx_smart_villa/manifest.json"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Read integration version
+        id: version
+        shell: bash
+        run: |
+          VERSION="$(python - <<'PY'
+          import json
+          from pathlib import Path
+          manifest = json.loads(Path('custom_components/cnx_smart_villa/manifest.json').read_text())
+          print(manifest['version'])
+          PY
+          )"
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+
+      - name: Create GitHub release if missing
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.version.outputs.version }}
+        shell: bash
+        run: |
+          TAG="v${VERSION}"
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "Release ${TAG} already exists; nothing to do."
+            exit 0
+          fi
+
+          cat > /tmp/release-notes.md <<'EOF'
+          ## CNX Smart Villa v0.2.0
+
+          Production-safety release for the CNX Smart Villa Home Assistant integration.
+
+          ### Highlights
+          - Adds a fail-open Home Assistant version guard: unvalidated HA versions warn operators without deliberately disabling Villa controls.
+          - Marks Home Assistant `2026.9.x` as the initial CNX validated production series.
+          - Adds Home Assistant Repairs warnings for newer/unvalidated Core versions.
+          - Adds System Health reporting for CNX compatibility and Smart Villa OS connectivity.
+          - Adds Thai and English operator messages.
+          - Adds compatibility CI against pinned production HA and latest HA for early breaking-change detection.
+          - HACS repository validation passes.
+
+          ### Production policy
+          Keep production villas on a CNX-validated Home Assistant monthly series. Validate new HA releases in CI/LAB, then staging, before production rollout.
+
+          ### Upgrade
+          Update CNX Smart Villa through HACS, restart Home Assistant, then open the CNX Smart Villa sidebar and verify System Health/Repairs.
+          EOF
+
+          gh release create "$TAG" \
+            --target "$GITHUB_SHA" \
+            --title "CNX Smart Villa ${TAG}" \
+            --notes-file /tmp/release-notes.md
