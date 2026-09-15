@@ -14,17 +14,9 @@ physical device
   -> guest room control
 ```
 
-The first slice deliberately works in **local commissioning mode** even before the authenticated Smart Villa OS mapping-sync API exists.
+The integration deliberately supports **local commissioning mode** even before the authenticated Smart Villa OS mapping-sync API exists.
 
 ## HACS installation
-
-This package is structured to be published as the standalone public repository:
-
-```text
-https://github.com/CNXSmartHome/cnx-smart-villa-ha
-```
-
-After that public repository is available:
 
 1. Open **HACS** in Home Assistant.
 2. Open the menu (three dots) and choose **Custom repositories**.
@@ -34,7 +26,7 @@ After that public repository is available:
 6. Restart Home Assistant.
 7. Go to **Settings -> Devices & services -> Add Integration -> CNX Smart Villa**.
 
-Minimum supported Home Assistant version for the v0.1.x package is **2026.9.0**.
+Minimum supported Home Assistant version is **2026.9.0**.
 
 ## Manual installation
 
@@ -52,7 +44,7 @@ to:
 
 Restart Home Assistant, then add **CNX Smart Villa** from **Settings -> Devices & services**.
 
-## Current features (v0.1.0)
+## Current features (v0.2.0)
 
 - UI-based Config Flow; no YAML setup.
 - Admin-only `CNX Smart Villa` sidebar panel.
@@ -65,6 +57,47 @@ Restart Home Assistant, then add **CNX Smart Villa** from **Settings -> Devices 
 - Backend refuses `guest_controllable=true` unless the entity is a supported controllable domain and criticality is `COMFORT`.
 - Optional Smart Villa OS health connection using `/api/health`.
 - TH/EN Config Flow translations.
+- Home Assistant **version guard** with fail-open behavior.
+- Home Assistant **Repair warning** when Core is outside the CNX-validated series.
+- CNX details in Home Assistant **System Health**.
+- GitHub Actions compatibility tests against the pinned Production HA version and latest Home Assistant.
+
+## Home Assistant version policy
+
+CNX Smart Villa production systems use an **explicit validation policy** rather than automatically trusting every new Home Assistant release.
+
+Current validated series:
+
+```text
+Home Assistant 2026.9.x
+CNX Smart Villa 0.2.x
+```
+
+The version guard is intentionally **fail-open**. If a villa is updated to a newer Home Assistant series before CNX has validated it, the integration continues to load and control/commissioning is not intentionally disabled. Instead CNX Smart Villa creates a Home Assistant Repair warning and reports the compatibility state in System Health.
+
+Operational policy:
+
+```text
+New HA release
+     |
+     v
+LAB / CI compatibility test
+     |
+     +-- fail -> HOLD production update
+     |
+     v
+Staging villa
+     |
+     v
+CNX marks series as validated
+     |
+     v
+Production villas may update
+```
+
+Do not use **Update all** as an unattended production policy. Keep the production HA Core version on a CNX-validated monthly series until the compatibility matrix is updated.
+
+System Health is available from Home Assistant under **Settings -> System -> Repairs -> System information** and reports the CNX integration version, running Home Assistant version, validation status, validated series, mapping count, and Smart Villa OS connectivity.
 
 ## Security boundary
 
@@ -92,25 +125,24 @@ switch.mh01_3 -> switch.v01_br01_cove
 
 ## Repository layout
 
-The standalone HACS repository must have this structure at its root:
-
 ```text
 custom_components/
   cnx_smart_villa/
     __init__.py
     manifest.json
     config_flow.py
+    version_guard.py
+    system_health.py
     ...
 brand/
   icon.png
 .github/
   workflows/
     validate.yml
+    compatibility.yml
 hacs.json
 README.md
 ```
-
-The development source currently lives in the Smart Villa monorepo under `integrations/home-assistant/cnx_smart_villa/`. That subtree is intentionally HACS-repo-ready so it can be mirrored to the standalone public repository without restructuring.
 
 ## Next slice
 

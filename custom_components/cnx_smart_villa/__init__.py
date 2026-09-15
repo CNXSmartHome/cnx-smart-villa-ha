@@ -15,6 +15,7 @@ from .const import (
     CONF_API_TOKEN,
     CONF_SMART_VILLA_URL,
     DATA_API,
+    DATA_COMPATIBILITY,
     DATA_PANEL_REGISTERED,
     DATA_STORE,
     DATA_WS_REGISTERED,
@@ -27,6 +28,7 @@ from .const import (
     VERSION,
 )
 from .store import MappingStore
+from .version_guard import update_version_repair
 from .websocket import async_register_websocket_commands
 
 
@@ -62,6 +64,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         str(entry.data.get(CONF_API_TOKEN, "")),
     )
 
+    # Fail-open compatibility guard: never disable a running villa merely because
+    # Home Assistant is newer than the CNX-validated series. Surface a Repair and
+    # health warning instead so operators can hold or roll back the Core update.
+    domain_data[DATA_COMPATIBILITY] = update_version_repair(hass)
+
     if not frontend.async_panel_exists(hass, PANEL_URL):
         await panel_custom.async_register_panel(
             hass=hass,
@@ -83,6 +90,7 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     domain_data = hass.data.get(DOMAIN, {})
     domain_data.pop(DATA_STORE, None)
     domain_data.pop(DATA_API, None)
+    domain_data.pop(DATA_COMPATIBILITY, None)
 
     if frontend.async_panel_exists(hass, PANEL_URL):
         frontend.async_remove_panel(hass, PANEL_URL, warn_if_unknown=False)
